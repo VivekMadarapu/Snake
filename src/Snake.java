@@ -1,40 +1,32 @@
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Snake{
 
-    private final int DIM = 200;
+    private static final int DIM = 200;
 
-    private final int[] x = new int[DIM*DIM/16];
-    private final int[] y = new int[DIM*DIM/16];
+    private static final int[] x = new int[DIM*DIM/16];
+    private static final int[] y = new int[DIM*DIM/16];
 
-    private int dots;
-    private int appleNum;
-    private Apple[] apples;
-    private int score = 0;
-    private int frameRate;
-    private boolean dirRight = true;
-    private boolean dirLeft = false;
-    private boolean dirUp = false;
-    private boolean dirDown = false;
-    private boolean inGame = true;
+    private static int dots;
+    private static int difficulty;
+    private static Apple apple;
+    private static int score = 0;
+    private static int frameRate;
+    private static boolean dirRight = true;
+    private static boolean dirLeft = false;
+    private static boolean dirUp = false;
+    private static boolean dirDown = false;
+    private static boolean inGame = true;
 
-    private Snake() {
-        StdDraw.clear(StdDraw.BLACK);
-        StdDraw.setXscale(0, DIM);
-        StdDraw.setYscale(0, DIM);
-        StdDraw.setPenColor(StdDraw.WHITE);
-        StdDraw.square(DIM/2.0, DIM/2.0, DIM/2.0);
-        gameStart();
-    }
-
-    private void exitScreen() {
+    private static void exitScreen() {
         StdDraw.clear(StdDraw.BLACK);
         StdDraw.text(100, 100, "Thank you for playing!");
     }
 
-    private void gameStart() {
+    private static void gameStart() {
         frameRate = 1200;
         StdDraw.clear(StdDraw.BLACK);
         dots = 1;
@@ -42,12 +34,7 @@ public class Snake{
             x[i] = DIM/2;
             y[i] = DIM/2;
         }
-        appleNum = 1;
-        apples = new Apple[appleNum];
-
-        for (int i = 0; i < appleNum; i++) {
-            apples[i] = new Apple();
-        }
+        apple = new Apple();
         while (inGame) {
             StdDraw.setPenColor(Color.WHITE);
             StdDraw.text(100, 80, "Move to Start");
@@ -65,12 +52,10 @@ public class Snake{
             }
         }
     }
-    private void paint() {
+    private static void paint() {
         StdDraw.setFont(new Font("Times New Roman", Font.BOLD, 12));
         StdDraw.setPenColor(Color.RED);
-        for (int i = 0; i < appleNum; i++) {
-            StdDraw.filledSquare(apples[i].getX(), apples[i].getY(), 2);
-        }
+        StdDraw.filledSquare(apple.getX(), apple.getY(), 2);
         StdDraw.setPenColor(Color.GREEN);
         for (int i = 0; i < dots; i++) {
             StdDraw.filledSquare(x[i], y[i], 2);
@@ -82,20 +67,17 @@ public class Snake{
         StdDraw.text(190, 205, printFPS + (frameRate/20));
         StdDraw.square(DIM/2.0, DIM/2.0, DIM/2.0);
     }
-    private void checks() {
+    private static void checks() {
         checkKey();
         move();
         paint();
         checkApple();
         collisionDetect();
-        for (int i = 0; i < appleNum; i++) {
-            if (System.currentTimeMillis() >= apples[i].getStartTime()
-                    + apples[i].getEndTime()) {
-                apples[i] = new Apple();
-            }
+        if (System.currentTimeMillis() >= apple.getStartTime() + apple.getEndTime()) {
+            apple = new Apple();
         }
     }
-    private void checkKey() {
+    private static void checkKey() {
         if (StdDraw.isKeyPressed(KeyEvent.VK_DOWN) && (!dirUp)) {
             dirDown = true;
             dirRight = false;
@@ -144,8 +126,8 @@ public class Snake{
             paint();
         }
     }
-    
-    private void move() {
+
+    private static void move() {
         for (int i = dots; i > 0; i--) {
             x[i] = x[(i - 1)];
             y[i] = y[(i - 1)];
@@ -164,7 +146,7 @@ public class Snake{
         }
     }
 
-    private void collisionDetect() {
+    private static void collisionDetect() {
         for (int i = dots; i > 0; i--) {
             if ((i > 1) && (x[0] == x[i]) && (y[0] == y[i])) {
                 inGame = false;
@@ -178,18 +160,16 @@ public class Snake{
             gameOver();
         }
     }
-    private void checkApple() {
-        for (int i = 0; i < appleNum; i++) {
-            if ((x[0] == apples[i].getX()) && (y[0] == apples[i].getY())) {
-                dots++;
-                score++;
-                apples[i] = new Apple();
-                paint();
-            }
+    private static void checkApple() {
+        if ((x[0] == apple.getX()) && (y[0] == apple.getY())) {
+            dots++;
+            score++;
+            apple = new Apple();
+            paint();
         }
     }
-    
-    private void gameOver() {
+
+    private static void gameOver() {
         StdDraw.clear(StdDraw.BLACK);
         StdDraw.setPenColor(StdDraw.WHITE);
         StdDraw.setFont(new Font("Times New Roman", Font.BOLD, 16));
@@ -227,7 +207,7 @@ public class Snake{
         private static final Random RNG = new Random(Long.getLong("seed", System.nanoTime()));
         Apple(){
             startTime = System.currentTimeMillis();
-            endTime = RNG.nextInt(999999) * 2000;
+            endTime = RNG.nextInt(100-difficulty*10) * 2000;
             int width = 200;
             int limit = width - 20;
             x = (10 * (RNG.nextInt(limit) / 10));
@@ -260,6 +240,15 @@ public class Snake{
     }
 
     public static void main(final String[] args) {
-        new Snake();
+        Scanner console = new Scanner(System.in);
+        System.out.print("Select Difficulty (1-9) >>> ");
+        difficulty = console.nextInt();
+
+        StdDraw.clear(StdDraw.BLACK);
+        StdDraw.setXscale(0, DIM);
+        StdDraw.setYscale(0, DIM);
+        StdDraw.setPenColor(StdDraw.WHITE);
+        StdDraw.square(DIM/2.0, DIM/2.0, DIM/2.0);
+        gameStart();
     }
 }
