@@ -132,18 +132,20 @@ public class Snake{
             x[i] = x[(i - 1)];
             y[i] = y[(i - 1)];
         }
-        if (dirDown && !dirUp) {
-            y[0] -= 5;
-        }
-        else if (dirUp && !dirDown) {
-            y[0] += 5;
-        }
-        else if (dirRight && !dirLeft) {
-            x[0] += 5;
-        }
-        else if (dirLeft && !dirRight) {
-            x[0] -= 5;
-        }
+        x[0] = (int) StdDraw.mouseX();
+        y[0] = (int) StdDraw.mouseY();
+//        if (dirDown && !dirUp) {
+//            y[0] -= 5;
+//        }
+//        else if (dirUp && !dirDown) {
+//            y[0] += 5;
+//        }
+//        else if (dirRight && !dirLeft) {
+//            x[0] += 5;
+//        }
+//        else if (dirLeft && !dirRight) {
+//            x[0] -= 5;
+//        }
     }
 
     private static void collisionDetect() {
@@ -159,7 +161,7 @@ public class Snake{
         }
     }
     private static void checkApple() {
-        if ((x[0] == apple.getX()) && (y[0] == apple.getY())) {
+        if ((x[0] <= apple.getX()+5 && x[0] >= apple.getX()-5) && (y[0] <= apple.getY()+5 && y[0] >= apple.getY()-5)) {
             dots++;
             score++;
             apple = new Apple();
