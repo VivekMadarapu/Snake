@@ -154,8 +154,6 @@ public class Snake{
             }
         }
         if (y[0] >= DIM || y[0] <= 0 || x[0] <= 0 || x[0] >= DIM) {
-//            x[0] = MIDDLE;
-//            y[0] = MIDDLE;
             inGame = false;
             gameOver();
         }
