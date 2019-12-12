@@ -12,6 +12,7 @@ public class Snake{
 
     private static int dots;
     private static String mode;
+    private static boolean wallsEnabled;
     private static int difficulty;
     private static Apple apple;
     private static int score = 0;
@@ -30,6 +31,7 @@ public class Snake{
     private static void gameStart() {
         frameRate = 1200;
         mode = "gridlock";
+        wallsEnabled = true;
         StdDraw.clear(StdDraw.BLACK);
         dots = 1;
         for (int i = 0; i < dots; i++) {
@@ -50,7 +52,7 @@ public class Snake{
                     }
                     StdDraw.show(frameRate / 20);
                     if(difficulty == 10){
-                        StdDraw.clear(new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255), 1));
+                        StdDraw.clear(new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255), 5));
                     }
                     else {
                         StdDraw.clear(StdDraw.BLACK);
@@ -80,10 +82,12 @@ public class Snake{
         StdDraw.setPenColor(StdDraw.WHITE);
         String printScore = "Score: ";
         String printMode = "Mode: ";
+        String printHeadPos = "Head Location: (";
         String printFPS = "FPS: ";
         StdDraw.text(15, 205, printScore + score);
         StdDraw.text(100, 205, printMode + mode);
         StdDraw.text(190, 205, printFPS + (frameRate/20));
+        StdDraw.text(30, -5, (printHeadPos + x[0] + ", " + y[0] + ")"));
         StdDraw.square(DIM/2.0, DIM/2.0, DIM/2.0);
     }
     private static void checks() {
@@ -97,6 +101,7 @@ public class Snake{
         }
     }
     private static void checkKey() {
+
         if (StdDraw.isKeyPressed(KeyEvent.VK_DOWN) && (!dirUp)) {
             dirDown = true;
             dirRight = false;
@@ -128,7 +133,7 @@ public class Snake{
         else if(StdDraw.isKeyPressed(KeyEvent.VK_SHIFT)){
             frameRate += 10;
         }
-        else if(StdDraw.isKeyPressed(KeyEvent.VK_W)){
+        if(StdDraw.isKeyPressed(KeyEvent.VK_W)){
             dots++;
             score++;
             paint();
@@ -143,6 +148,12 @@ public class Snake{
                 score = 0;
             }
             paint();
+        }
+        if(StdDraw.isKeyPressed(KeyEvent.VK_Z)){
+            wallsEnabled = false;
+        }
+        else  if(StdDraw.isKeyPressed(KeyEvent.VK_X)){
+            wallsEnabled = true;
         }
         if(StdDraw.mousePressed()){
             if(mode.equals("gridlock")){
@@ -169,15 +180,27 @@ public class Snake{
         else {
             if (dirDown && !dirUp) {
                 y[0] -= 5;
+                if(y[0] < 10 && !wallsEnabled){
+                    y[0] = 190;
+                }
             }
             else if (dirUp && !dirDown) {
                 y[0] += 5;
+                if(y[0] > 190 && !wallsEnabled){
+                    y[0] = 10;
+                }
             }
             else if (dirRight && !dirLeft) {
                 x[0] += 5;
+                if(x[0] > 190 && !wallsEnabled){
+                    x[0] = 10;
+                }
             }
             else if (dirLeft && !dirRight) {
                 x[0] -= 5;
+                if(x[0] < 10 && !wallsEnabled){
+                    x[0] = 190;
+                }
             }
         }
     }
