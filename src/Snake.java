@@ -5,17 +5,17 @@ import java.util.Scanner;
 
 public class Snake{
 
-    private static final int DIM = 200;
+    private static final int DIM = 150;
 
     private static final int[] x = new int[DIM*DIM/16];
     private static final int[] y = new int[DIM*DIM/16];
 
     private static int dots;
     private static String mode;
-    private static boolean wallsEnabled;
+    private static boolean collisionsEnabled;
     private static int difficulty;
     private static Apple apple;
-    private static int score = 0;
+    private static int score;
     private static int frameRate;
     private static boolean dirRight = true;
     private static boolean dirLeft = false;
@@ -25,13 +25,14 @@ public class Snake{
 
     private static void exitScreen() {
         StdDraw.clear(StdDraw.BLACK);
-        StdDraw.text(100, 100, "Thank you for playing!");
+        StdDraw.text(DIM/2.0, DIM/2.0, "Thank you for playing!");
     }
 
     private static void gameStart() {
         frameRate = 1200;
+        score = 0;
         mode = "gridlock";
-        wallsEnabled = true;
+        collisionsEnabled = true;
         StdDraw.clear(StdDraw.BLACK);
         dots = 1;
         for (int i = 0; i < dots; i++) {
@@ -41,7 +42,7 @@ public class Snake{
         apple = new Apple();
         while (inGame) {
             StdDraw.setPenColor(Color.WHITE);
-            StdDraw.text(100, 80, "Move to Start");
+            StdDraw.text(DIM/2.0, DIM/2.0-20, "Move to Start");
             StdDraw.setPenColor(Color.GREEN);
             StdDraw.filledSquare(DIM/2.0, DIM/2.0, 2);
             Random r = new Random();
@@ -84,10 +85,10 @@ public class Snake{
         String printMode = "Mode: ";
         String printHeadPos = "Head Location: (";
         String printFPS = "FPS: ";
-        StdDraw.text(15, 205, printScore + score);
-        StdDraw.text(100, 205, printMode + mode);
-        StdDraw.text(190, 205, printFPS + (frameRate/20));
-        StdDraw.text(30, -5, (printHeadPos + x[0] + ", " + y[0] + ")"));
+        StdDraw.text(DIM/10.0, DIM+5, printScore + score);
+        StdDraw.text(DIM/2.0, DIM+5, printMode + mode);
+        StdDraw.text(DIM-10, DIM+5, printFPS + (frameRate/20));
+        StdDraw.text(DIM/5.0, -5, (printHeadPos + x[0] + ", " + y[0] + ")"));
         StdDraw.square(DIM/2.0, DIM/2.0, DIM/2.0);
     }
     private static void checks() {
@@ -150,10 +151,10 @@ public class Snake{
             paint();
         }
         if(StdDraw.isKeyPressed(KeyEvent.VK_Z)){
-            wallsEnabled = false;
+            collisionsEnabled = false;
         }
         else  if(StdDraw.isKeyPressed(KeyEvent.VK_X)){
-            wallsEnabled = true;
+            collisionsEnabled = true;
         }
         if(StdDraw.mousePressed()){
             if(mode.equals("gridlock")){
@@ -180,27 +181,15 @@ public class Snake{
         else {
             if (dirDown && !dirUp) {
                 y[0] -= 5;
-                if(y[0] < 10 && !wallsEnabled){
-                    y[0] = 190;
-                }
             }
             else if (dirUp && !dirDown) {
                 y[0] += 5;
-                if(y[0] > 190 && !wallsEnabled){
-                    y[0] = 10;
-                }
             }
             else if (dirRight && !dirLeft) {
                 x[0] += 5;
-                if(x[0] > 190 && !wallsEnabled){
-                    x[0] = 10;
-                }
             }
             else if (dirLeft && !dirRight) {
                 x[0] -= 5;
-                if(x[0] < 10 && !wallsEnabled){
-                    x[0] = 190;
-                }
             }
         }
     }
@@ -208,13 +197,31 @@ public class Snake{
     private static void collisionDetect() {
         for (int i = dots; i > 0; i--) {
             if ((i > 1) && (x[0] == x[i]) && (y[0] == y[i])) {
-                inGame = false;
-                gameOver();
+                if(collisionsEnabled){
+                    inGame = false;
+                    gameOver();
+                }
             }
         }
         if (y[0] >= DIM || y[0] <= 0 || x[0] <= 0 || x[0] >= DIM) {
-            inGame = false;
-            gameOver();
+            if(collisionsEnabled){
+                inGame = false;
+                gameOver();
+            }
+            else{
+                if (y[0] < 5) {
+                    y[0] = DIM-5;
+                }
+                else if (y[0] > DIM-5) {
+                    y[0] = 5;
+                }
+                else if (x[0] > DIM-5) {
+                    x[0] = 5;
+                }
+                else {
+                    x[0] = DIM-5;
+                }
+            }
         }
     }
     private static void checkApple() {
@@ -231,15 +238,15 @@ public class Snake{
         StdDraw.setPenColor(StdDraw.WHITE);
         StdDraw.setFont(new Font("Times New Roman", Font.BOLD, 16));
         if (score >= DIM*DIM/16) {
-            StdDraw.text(100, 100, "YOU WIN!");
-            StdDraw.text(100, 90, "Score: " + score);
-            StdDraw.text(100, 80, "Play Again? Y/N ");
+            StdDraw.text(DIM/2.0, DIM/2.0+10, "YOU WIN!");
+            StdDraw.text(DIM/2.0, DIM/2.0, "Score: " + score);
+            StdDraw.text(DIM/2.0, DIM/2.0-10, "Play Again? Y/N ");
             StdDraw.show();
         }
         else {
-            StdDraw.text(100, 100, "Game Over");
-            StdDraw.text(100, 90, "Score: " + score);
-            StdDraw.text(100, 80, "Play Again? Y/N ");
+            StdDraw.text(DIM/2.0, DIM/2.0+10, "Game Over");
+            StdDraw.text(DIM/2.0, DIM/2.0, "Score: " + score);
+            StdDraw.text(DIM/2.0, DIM/2.0-10, "Play Again? Y/N ");
             StdDraw.show();
             while (!inGame) {
                 if (StdDraw.isKeyPressed(KeyEvent.VK_Y)) {
@@ -270,17 +277,16 @@ public class Snake{
             else{
                 endTime = RNG.nextInt(100-difficulty*10) * 2000;
             }
-            int width = 200;
-            int limit = width - 20;
+            int limit = DIM - 20;
             x = (10 * (RNG.nextInt(limit) / 10));
             y = (10 * (RNG.nextInt(limit) / 10));
-            if(x >= width - 20){
+            if(x >= DIM - 20){
                 x -= 30;
             }
             else if(x <= 20){
                 x+= 30;
             }
-            if(y >= width - 20){
+            if(y >= DIM - 20){
                 y -= 30;
             }
             else if(y <= 20){
