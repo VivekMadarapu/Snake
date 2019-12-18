@@ -42,6 +42,7 @@ public class Snake{
         apple = new Apple();
         while (inGame) {
             StdDraw.setPenColor(Color.WHITE);
+            StdDraw.square(DIM/2.0, DIM/2.0, DIM/2.0);
             StdDraw.text(DIM/2.0, DIM/2.0-20, "Move to Start");
             StdDraw.setPenColor(Color.GREEN);
             StdDraw.filledSquare(DIM/2.0, DIM/2.0, 2);
@@ -52,7 +53,7 @@ public class Snake{
                         System.exit(1);
                     }
                     StdDraw.show(frameRate / 20);
-                    if(difficulty == 10){
+                    if(difficulty == 0){
                         StdDraw.clear(new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255), 5));
                     }
                     else {
@@ -296,23 +297,29 @@ public class Snake{
     }
 
     public static void main(final String[] args) {
-        Scanner console = new Scanner(System.in);
-        do {
-            System.out.print("Select Difficulty (1-9) >>> ");
-            difficulty = Math.abs(console.nextInt());
-            if(difficulty == 10){
-                do{
-                    System.out.print("Warning: You have selected extreme mode! Confirm Selection >>> ");
-                    difficulty = Math.abs(console.nextInt());
-                }while(difficulty > 10);
-            }
-        }while(difficulty > 10);
 
         StdDraw.clear(StdDraw.BLACK);
         StdDraw.setXscale(0, DIM);
         StdDraw.setYscale(0, DIM);
         StdDraw.setPenColor(StdDraw.WHITE);
-        StdDraw.square(DIM/2.0, DIM/2.0, DIM/2.0);
+        StdDraw.text(DIM / 2.0, DIM / 2.0, "Select Difficulty (1-9)");
+        while (true) {
+            if (StdDraw.hasNextKeyTyped()) {
+                difficulty = StdDraw.nextKeyTyped()-48;
+                break;
+            }
+        }
+        if (difficulty == 0) {
+            StdDraw.clear(StdDraw.BLACK);
+            StdDraw.text(DIM / 2.0, DIM / 2.0, "Warning: You have selected extreme mode! Confirm Selection");
+            StdDraw.text(DIM / 2.0, DIM / 2.0 - 10, "Confirm Selection");
+            while (true) {
+                if (StdDraw.hasNextKeyTyped()) {
+                    difficulty = StdDraw.nextKeyTyped()-48;
+                    break;
+                }
+            }
+        }
         gameStart();
     }
 }
