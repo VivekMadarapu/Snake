@@ -103,7 +103,6 @@ public class Snake{
         }
     }
     private static void checkKey() {
-
         if (StdDraw.isKeyPressed(KeyEvent.VK_DOWN) && (!dirUp)) {
             dirDown = true;
             dirRight = false;
